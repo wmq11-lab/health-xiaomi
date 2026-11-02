@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#cfe2e7" />
+    <meta
+      name="description"
+      content="云朵收容所 - 把身体的小信号收进云里的治愈系健康陪伴应用"
+    />
+    <link rel="icon" href="./assets/cloud-logo.svg" type="image/svg+xml" />
+    <title>云朵收容所</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <svg class="svg-library" aria-hidden="true">
+      <symbol id="i-cloud" viewBox="0 0 24 24">
+        <path d="M6.6 18.2h10.7a4.1 4.1 0 0 0 .4-8.2A6.1 6.1 0 0 0 6.2 9.1a4.6 4.6 0 0 0 .4 9.1Z" />
+      </symbol>
+      <symbol id="i-spark" viewBox="0 0 24 24">
+        <path d="m12 3 1.4 5.6L19 10l-5.6 1.4L12 17l-1.4-5.6L5 10l5.6-1.4L12 3Z" />
+      </symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24">
+        <path d="M19.2 15.3A7.8 7.8 0 0 1 8.7 4.8a8 8 0 1 0 10.5 10.5Z" />
+      </symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24">
+        <path d="M20.8 5.8a5.5 5.5 0 0 0-7.8 0L12 6.9l-1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 22l8.8-8.4a5.5 5.5 0 0 0 0-7.8Z" />
+      </symbol>
+      <symbol id="i-leaf" viewBox="0 0 24 24">
+        <path d="M20.8 3.2C12 3.2 4.8 8.4 5.7 16c.8 6.9 7.4 5.3 10.8 1.1 3.7-4.5 4.3-13.9 4.3-13.9Z" />
+        <path d="M4.4 20.6c2.8-7 7.4-10.8 13.1-13.3" />
+      </symbol>
+      <symbol id="i-water" viewBox="0 0 24 24">
+        <path d="M12 2.8S5.8 9.9 5.8 15a6.2 6.2 0 0 0 12.4 0C18.2 9.9 12 2.8 12 2.8Z" />
+      </symbol>
+      <symbol id="i-chat" viewBox="0 0 24 24">
+        <path d="M20.6 11.4a7.8 7.8 0 0 1-8.1 7.5 9 9 0 0 1-3.2-.7l-4.8 2.1 1.8-4.3a7 7 0 0 1-2.3-5.1 7.8 7.8 0 0 1 8.1-7.5 7.8 7.8 0 0 1 8.5 8Z" />
+      </symbol>
+      <symbol id="i-wind" viewBox="0 0 24 24">
+        <path d="M3 8h10.5a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h7" />
+      </symbol>
+      <symbol id="i-letter" viewBox="0 0 24 24">
+        <path d="M3.5 6.5h17v12h-17z" />
+        <path d="m4 7 8 6 8-6" />
+      </symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z" />
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 24 24">
+        <path d="m5 5 14 14M19 5 5 19" />
+      </symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24">
+        <path d="M5 12h14M14 7l5 5-5 5" />
+      </symbol>
+      <symbol id="i-volume" viewBox="0 0 24 24">
+        <path d="M11 5 6.5 9H3v6h3.5l4.5 4V5ZM15 9a4.2 4.2 0 0 1 0 6M18 6a8 8 0 0 1 0 12" />
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 24 24">
+        <path d="m5 12.5 4.3 4.3L19 7.2" />
+      </symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24">
+        <path d="M12 3 2.8 20h18.4L12 3ZM12 9v5M12 17.2v.1" />
+      </symbol>
+    </svg>
+
+    <div class="desktop-atmosphere" aria-hidden="true">
+      <span class="far-cloud cloud-one"></span>
+      <span class="far-cloud cloud-two"></span>
+      <span class="far-cloud cloud-three"></span>
+      <p class="desktop-caption">给身体的小信号，<br />留一朵云的位置。</p>
+    </div>
+
+    <main class="phone-shell" aria-label="云朵收容所 App 原型">
+      <div class="status-bar" aria-hidden="true">
+        <span>9:41</span>
+        <div class="status-icons">
+          <span class="signal-bars"><i></i><i></i><i></i><i></i></span>
+          <span class="wifi"></span>
+          <span class="battery"><i></i></span>
+        </div>
+      </div>
+
+      <div class="screen-viewport">
+        <section class="screen screen-today is-active" id="screen-today" data-screen="today">
+          <div class="sky-glow" aria-hidden="true"></div>
+          <header class="app-header">
+            <a href="#" class="brand" aria-label="云朵收容所首页">
+              <img src="./assets/cloud-logo.svg" alt="" />
+              <span>
+                <strong>云朵收容所</strong>
+                <small>CLOUD SHELTER</small>
+              </span>
+            </a>
+            <button class="icon-button" id="open-settings" aria-label="打开设置">
+              <svg><use href="#i-settings"></use></svg>
+            </button>
+          </header>
+
+          <div class="greeting">
+            <div>
+              <p class="date-line">11月1日 · 星期日</p>
+              <h1>早上好，小满</h1>
+            </div>
+            <button class="sync-pill" id="open-sync" aria-label="查看数据同步状态">
+              <span class="sync-dot"></span>
+              小米已同步
+            </button>
+          </div>
+
+          <article class="sky-scene" aria-label="今日身体状态">
+            <span class="tiny-star star-a" aria-hidden="true">✦</span>
+            <span class="tiny-star star-b" aria-hidden="true">·</span>
+            <span class="tiny-star star-c" aria-hidden="true">✦</span>
+            <span class="distant-cloud distance-a" aria-hidden="true"></span>
+            <span class="distant-cloud distance-b" aria-hidden="true"></span>
+
+            <button class="metric-cloud sleep-cloud" data-detail="sleep" aria-label="查看昨晚睡眠">
+              <span class="metric-icon moon-colored"><svg><use href="#i-moon"></use></svg></span>
+              <span>
+                <small>昨夜睡意</small>
+                <strong>6<em>时</em>42<em>分</em></strong>
+              </span>
+            </button>
+
+            <button class="metric-cloud heart-cloud" data-detail="heart" aria-label="查看静息心率">
+              <span class="metric-icon heart-colored"><svg><use href="#i-heart"></use></svg></span>
+              <span>
+                <small>安静心跳</small>
+                <strong>62<em>bpm</em></strong>
+              </span>
+            </button>
+
+            <div class="hero-cloud" aria-hidden="true">
+              <span class="cloud-puff puff-one"></span>
+              <span class="cloud-puff puff-two"></span>
+              <span class="cloud-puff puff-three"></span>
+              <span class="cloud-face">
+                <i class="eye eye-left"></i>
+                <i class="eye eye-right"></i>
+                <i class="blush blush-left"></i>
+                <i class="blush blush-right"></i>
+                <i class="mouth"></i>
+              </span>
+              <span class="sleep-hat"></span>
+              <span class="cloud-freckle freckle-a"></span>
+              <span class="cloud-freckle freckle-b"></span>
+            </div>
+
+            <div class="today-note">
+              <span class="note-tape" aria-hidden="true"></span>
+              <p class="state-kicker">今日云层 · 轻轻的</p>
+              <h2>有一小片困意<br />停在肩上</h2>
+              <p>比平时多醒了 2 次，今天可以把节奏放慢一点。</p>
+              <div class="note-links">
+                <button class="text-link" data-open-detective>
+                  发生了什么
+                  <svg><use href="#i-arrow"></use></svg>
+                </button>
+                <button class="baseline-chip-link" data-open-baseline>
+                  <svg><use href="#i-spark"></use></svg>
+                  30 天基线
+                </button>
+              </div>
+            </div>
+
+            <button class="metric-note mood-note" data-detail="mood" aria-label="查看心情便签">
+              <span class="scribble-line"></span>
+              <small>心情便签</small>
+              <strong>安安静静</strong>
+              <span class="mood-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            </button>
+          </article>
+
+          <section class="kind-actions" aria-labelledby="kind-actions-title">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">TAKE IT SLOW</span>
+                <h3 id="kind-actions-title">给小云一点力气</h3>
+              </div>
+              <span class="star-count"><svg><use href="#i-spark"></use></svg><span id="stars">12</span></span>
+            </div>
+            <div class="action-strip">
+              <button class="action-card" data-reward="hydration">
+                <span class="action-art water-art"><svg><use href="#i-water"></use></svg></span>
+                <span>喝口水</span>
+                <small>润一润云层</small>
+              </button>
+              <button class="action-card" data-reward="stretch">
+                <span class="action-art leaf-art"><svg><use href="#i-leaf"></use></svg></span>
+                <span>伸个懒腰</span>
+                <small>让云飘起来</small>
+              </button>
+              <button class="action-card" data-go="breathe">
+                <span class="action-art wind-art"><svg><use href="#i-wind"></use></svg></span>
+                <span>去呼吸</span>
+                <small>和云一起起伏</small>
+              </button>
+            </div>
+          </section>
+
+          <button class="detective-card" id="open-detective">
+            <span class="detective-art" aria-hidden="true">
+              <svg><use href="#i-cloud"></use></svg>
+              <b>?</b>
+            </span>
+            <span class="detective-copy">
+              <small>A LITTLE QUESTION</small>
+              <strong>昨晚为什么多醒了 2 次？</strong>
+              <span>只问两三个小问题，和你一起找线索。</span>
+            </span>
+            <svg class="detective-arrow"><use href="#i-arrow"></use></svg>
+          </button>
+        </section>
+
+        <section class="screen screen-chat" id="screen-chat" data-screen="chat" aria-hidden="true">
+          <header class="sub-header">
+            <button class="back-cloud" data-go="today" aria-label="返回今日">
+              <svg><use href="#i-cloud"></use></svg>
+            </button>
+            <div>
+              <span class="eyebrow">A SOFT CONVERSATION</span>
+              <h1>和小云说说话</h1>
+            </div>
+            <span class="online-dot" aria-label="在线"></span>
+          </header>
+
+          <div class="chat-weather">
+            <span class="mini-sun"></span>
+            <p>我会参考你的睡眠、心跳和最近心情。<br />答案会像一张便签，尽量短一点。</p>
+            <span class="privacy-mark">只为你保存</span>
+          </div>
+
+          <div class="chat-stream" id="chat-stream" aria-live="polite">
+            <div class="chat-note user-note">
+              <div class="note-pin"></div>
+              <p>昨晚好像醒了好几次，今天有点没力气。</p>
+              <span>08:21</span>
+            </div>
+            <div class="chat-note ai-note">
+              <div class="ai-cloud-avatar" aria-hidden="true">
+                <i></i><i></i><b></b>
+              </div>
+              <p>
+                我看见了。你昨晚比平时多醒了 2 次，安静心跳也比近 30 天平均高 3 bpm。
+                今天先不安排太满，午后晒 10 分钟太阳，会更容易把困意抖落。
+              </p>
+              <div class="citation-row">
+                <button data-detail="sleep">睡眠记录 · 6h42m</button>
+                <button data-detail="heart">静息心率 · 62</button>
+              </div>
+              <span>08:21 · 来自你的云</span>
+            </div>
+          </div>
+
+          <div class="prompt-suggestions" aria-label="可以这样问">
+            <button data-prompt="今天适合运动吗？">今天适合运动吗？</button>
+            <button data-prompt="为什么最近有点累？">为什么最近有点累？</button>
+            <button data-prompt="陪我做个一周回顾">陪我做个一周回顾</button>
+          </div>
+
+          <button class="safety-note" id="open-triage">
+            <svg><use href="#i-alert"></use></svg>
+            <span>我不做诊断。先检查胸痛、呼吸困难等需要立即求助的情况。</span>
+            <svg class="safety-arrow"><use href="#i-arrow"></use></svg>
+          </button>
+
+          <form class="chat-composer" id="chat-form">
+            <label class="sr-only" for="chat-input">给小云留言</label>
+            <input id="chat-input" type="text" autocomplete="off" placeholder="把想说的放进云里…" />
+            <button type="submit" aria-label="发送">
+              <svg><use href="#i-arrow"></use></svg>
+            </button>
+          </form>
+        </section>
+
+        <section class="screen screen-breathe" id="screen-breathe" data-screen="breathe" aria-hidden="true">
+          <header class="sub-header breathe-header">
+            <button class="back-cloud" data-go="today" aria-label="返回今日">
+              <svg><use href="#i-cloud"></use></svg>
+            </button>
+            <div>
+              <span class="eyebrow">A QUIET CORNER</span>
+              <h1>呼吸云室</h1>
+            </div>
+            <button class="icon-button glass-button" id="sound-toggle" aria-label="开启自然声音">
+              <svg><use href="#i-volume"></use></svg>
+            </button>
+          </header>
+
+          <div class="breathing-stage">
+            <span class="breathing-orbit orbit-one"></span>
+            <span class="breathing-orbit orbit-two"></span>
+            <span class="breathing-spark breath-spark-one">✦</span>
+            <span class="breathing-spark breath-spark-two">·</span>
+            <button class="breathing-cloud" id="breathing-cloud" aria-label="开始呼吸练习">
+              <span class="breath-face"><i></i><i></i><b></b></span>
+            </button>
+            <div class="breath-copy">
+              <span class="breath-phase" id="breath-phase">准备好了吗</span>
+              <h2 id="breath-instruction">让肩膀慢慢落下来</h2>
+              <p id="breath-timer">跟云一起，一吸一呼</p>
+            </div>
+          </div>
+
+          <button class="primary-pill" id="breath-start">
+            <span class="play-shape"></span>
+            <span id="breath-button-label">开始 60 秒</span>
+          </button>
+
+          <div class="breath-cards">
+            <article>
+              <span>4</span>
+              <p>轻轻吸气<br /><small>让云变大</small></p>
+            </article>
+            <article>
+              <span>4</span>
+              <p>短暂停留<br /><small>停在云里</small></p>
+            </article>
+            <article>
+              <span>6</span>
+              <p>慢慢呼气<br /><small>让云变轻</small></p>
+            </article>
+          </div>
+
+          <p class="breathing-footnote">如果感到头晕或不适，请停止并恢复正常呼吸。</p>
+        </section>
+
+        <section class="screen screen-journal" id="screen-journal" data-screen="journal" aria-hidden="true">
+          <header class="sub-header journal-header">
+            <div>
+              <span class="eyebrow">YOUR WEEK, GENTLY KEPT</span>
+              <h1>这周的云来信</h1>
+            </div>
+            <button class="round-date" aria-label="查看本周日期">
+              <strong>01</strong>
+              <span>NOV</span>
+            </button>
+          </header>
+
+          <article class="envelope-card">
+            <div class="envelope-flap" aria-hidden="true"></div>
+            <div class="letter-sheet">
+              <div class="letter-top">
+                <span>to 小满</span>
+                <span>第 07 封</span>
+              </div>
+              <p class="hand-note">这周的云，偶尔有点重，<br />但你都有好好接住它。</p>
+              <div class="week-line" aria-label="本周恢复趋势折线图">
+                <svg viewBox="0 0 300 92" role="img">
+                  <path class="line-shadow" d="M2 63C31 57 42 36 72 43S116 69 143 56s41-32 72-22 44 15 83 2" />
+                  <path class="line-main" d="M2 63C31 57 42 36 72 43S116 69 143 56s41-32 72-22 44 15 83 2" />
+                  <circle cx="2" cy="63" r="4" />
+                  <circle cx="72" cy="43" r="4" />
+                  <circle cx="143" cy="56" r="4" />
+                  <circle cx="215" cy="34" r="4" />
+                  <circle cx="298" cy="36" r="5" />
+                </svg>
+                <div class="week-labels"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+              </div>
+              <p class="letter-copy">
+                入睡时间比上周晚了 17 分钟，但周末已经慢慢补回来。三次散步之后，你都说心情轻了一些。
+              </p>
+              <button class="letter-link" id="read-letter">
+                展开这封信 <svg><use href="#i-arrow"></use></svg>
+              </button>
+            </div>
+            <span class="cloud-seal" aria-hidden="true"><svg><use href="#i-cloud"></use></svg></span>
+          </article>
+
+          <section class="kept-things">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">LITTLE THINGS KEPT</span>
+                <h3>收容下来的小事</h3>
+              </div>
+              <span class="tiny-count">12 颗星光</span>
+            </div>
+            <div class="keepsake-grid">
+              <article class="keepsake-card mint-card">
+                <span class="keepsake-icon"><svg><use href="#i-leaf"></use></svg></span>
+                <strong>3 次散步</strong>
+                <p>最长的一次，沿河走了 28 分钟。</p>
+              </article>
+              <article class="keepsake-card peach-card">
+                <span class="keepsake-icon"><svg><use href="#i-moon"></use></svg></span>
+                <strong>2 晚好眠</strong>
+                <p>不必每晚都完美，已经很好。</p>
+              </article>
+            </div>
+          </section>
+
+          <button class="data-card" id="journal-sync">
+            <span class="data-orbit"><i></i></span>
+            <span>
+              <small>数据在你的云里</small>
+              <strong>小米运动健康 · 本地保存</strong>
+            </span>
+            <svg><use href="#i-arrow"></use></svg>
+          </button>
+        </section>
+      </div>
+
+      <nav class="bottom-nav" aria-label="主导航">
+        <button class="nav-item is-current" data-go="today" aria-label="今日">
+          <span class="nav-icon cloud-nav"><svg><use href="#i-cloud"></use></svg></span>
+          <span>今日</span>
+        </button>
+        <button class="nav-item" data-go="chat" aria-label="相谈">
+          <span class="nav-icon"><svg><use href="#i-chat"></use></svg></span>
+          <span>相谈</span>
+        </button>
+        <button class="nav-item" data-go="breathe" aria-label="呼吸">
+          <span class="nav-icon"><svg><use href="#i-wind"></use></svg></span>
+          <span>呼吸</span>
+        </button>
+        <button class="nav-item" data-go="journal" aria-label="周记">
+          <span class="nav-icon"><svg><use href="#i-letter"></use></svg></span>
+          <span>周记</span>
+        </button>
+      </nav>
+    </main>
+
+    <section
+      class="safety-overlay"
+      id="safety-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="triage-title"
+      aria-hidden="true"
+    >
+      <div class="safety-panel">
+        <header class="safety-header">
+          <div>
+            <span class="eyebrow">SAFETY COMES FIRST</span>
+            <h1 id="triage-title">先看看是否需要马上求助</h1>
+          </div>
+          <button class="safety-close" id="safety-close" aria-label="关闭安全分诊">
+            <svg><use href="#i-close"></use></svg>
+          </button>
+        </header>
+        <div id="triage-content"></div>
+      </div>
+    </section>
+
+    <div class="sheet-backdrop" id="sheet-backdrop"></div>
+    <aside class="detail-sheet" id="detail-sheet" role="dialog" aria-modal="true" aria-hidden="true">
+      <button class="sheet-close" id="sheet-close" aria-label="关闭">
+        <svg><use href="#i-close"></use></svg>
+      </button>
+      <div id="sheet-content"></div>
+    </aside>
+    <div class="toast" id="toast" role="status" aria-live="polite">
+      <svg><use href="#i-spark"></use></svg>
+      <span>收下一颗小星光</span>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">云朵收容所应用图标</title>
+  <desc id="desc">一朵奶白色云朵收着一枚小小的粉色心跳</desc>
+  <defs>
+    <linearGradient id="sky" x1="30" y1="18" x2="226" y2="238" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EAF4F0"/>
+      <stop offset=".56" stop-color="#DDEAF1"/>
+      <stop offset="1" stop-color="#D8D5E9"/>
+    </linearGradient>
+    <linearGradient id="cloud" x1="82" y1="62" x2="178" y2="188" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFDF5"/>
+      <stop offset="1" stop-color="#F6EFE2"/>
+    </linearGradient>
+    <filter id="softShadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="9" stdDeviation="10" flood-color="#617486" flood-opacity=".2"/>
+    </filter>
+    <filter id="wobble">
+      <feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="2" seed="8" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <rect width="256" height="256" rx="62" fill="url(#sky)"/>
+  <path d="M37 184c28-12 45-7 67 2 28 11 53 8 78-4 16-8 34-7 47 0v74H37z" fill="#C8D9E0" opacity=".28"/>
+  <g filter="url(#softShadow)">
+    <path d="M73 174c-22-2-36-17-35-36 1-18 15-31 33-32 2-31 20-49 48-51 26-2 45 12 53 34 24-2 41 12 44 34 4 26-14 46-40 50l-91 2z" fill="url(#cloud)" filter="url(#wobble)"/>
+    <path d="M76 171c-18-1-27-12-26-27 1-13 11-24 25-25" fill="none" stroke="#B7C9D0" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+  </g>
+  <path d="M83 132h21l10-17 14 40 12-28 10 14h23" fill="none" stroke="#ED9A91" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="156" cy="117" r="7" fill="#DFAA94"/>
+  <circle cx="189" cy="92" r="4" fill="#F4D39F"/>
+  <path d="M32 73l4-10 4 10 10 4-10 4-4 10-4-10-10-4z" fill="#E6CA91" opacity=".9"/>
+</svg>
