@@ -1,0 +1,28 @@
+{
+  "name": "health",
+  "version": "1.0.0",
+  "description": "这是一个不依赖构建工具的高保真移动端交互原型，用浏览器直接打开 `index.html` 即可。",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wmq11-lab/health-xiaomi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/wmq11-lab/health-xiaomi/issues"
+  },
+  "homepage": "https://github.com/wmq11-lab/health-xiaomi#readme",
+  "dependencies": {
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0",
+    "node-fetch": "^2.7.0"
+  }
+}

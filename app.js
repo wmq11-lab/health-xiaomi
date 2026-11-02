@@ -17,6 +17,7 @@ let detectiveSelections = new Set();
 let triageRiskSelections = new Set();
 let triageOtherSelections = new Set();
 
+// 演示数据（真实数据到达后会被覆盖）
 const details = {
   sleep: {
     eyebrow: "昨夜云层 · 11月1日",
@@ -49,6 +50,19 @@ const details = {
     footnote: "心情便签只用于回顾与陪伴，不替代心理或医疗评估。",
   },
 };
+
+// 当真实健康数据到达后，更新 details
+function mergeRealDetails() {
+  if (!window.__healthDetails) return;
+  const hd = window.__healthDetails;
+  if (hd.sleep) Object.assign(details.sleep, hd.sleep);
+  if (hd.heart) Object.assign(details.heart, hd.heart);
+}
+
+// 数据就绪后自动合并
+window.addEventListener("health-data-ready", mergeRealDetails);
+// 如果数据已先于 app.js 加载完成
+if (window.__healthDetails) mergeRealDetails();
 
 function pointsForSleep() {
   return "M2 67C36 61 51 30 79 39S113 74 142 55s39-24 69-13 54 17 82 0";
@@ -192,19 +206,25 @@ function showSync(returnTarget = document.activeElement) {
     </div>
     <p class="sheet-summary">最近一次同步发生在今天 08:16。数据只用于生成你的健康便签，未经允许不会发送给其他云朵。</p>
     <div class="sync-list">
-      <div class="sync-row"><span>睡眠与清醒次数</span><span>已更新</span></div>
-      <div class="sync-row"><span>静息心率</span><span>已更新</span></div>
-      <div class="sync-row"><span>步数与运动</span><span>已更新</span></div>
-      <div class="sync-row"><span>血氧 / HRV</span><span>未开放</span></div>
+      ${(window.__syncStatus?.rows || []).map(r => `<div class="sync-row"><span>${r.label}</span><span>${r.status}</span></div>`).join("")}
     </div>
     <button class="sync-action" id="sync-now">再同步一次</button>
-    <p class="sheet-footnote">真实接入时需要逐项申请 Health Connect 权限。不同小米设备支持的数据类型可能不同。</p>
+    <p class="sheet-footnote">${window.__healthConnected ? "数据来自小米运动健康云同步。" : "当前为演示数据。"}配置 .env 中的小米账号可接入真实数据。</p>
   `;
   openSheetBase(returnTarget);
-  document.getElementById("sync-now").addEventListener("click", () => {
+  document.getElementById("sync-now").addEventListener("click", async () => {
     const button = document.getElementById("sync-now");
-    button.textContent = "刚刚完成同步";
-    showToast("云层已经更新");
+    button.textContent = "正在同步...";
+    if (window.refreshHealthData) {
+      await window.refreshHealthData();
+      mergeRealDetails();
+      showToast("云层已经更新");
+      // 刷新同步面板
+      showSync(document.activeElement);
+    } else {
+      button.textContent = "刚刚完成同步";
+      showToast("云层已经更新");
+    }
   });
 }
 
@@ -219,7 +239,7 @@ function showSettings(returnTarget = document.activeElement) {
     </div>
     <p class="sheet-summary">这里决定哪些数据可以进入你的云层，以及什么时候收到轻轻的提醒。</p>
     <div class="sync-list">
-      <div class="sync-row"><span>小米运动健康同步</span><span>已连接</span></div>
+      <div class="sync-row"><span>小米运动健康同步</span><span>${window.__healthConnected ? "已连接" : "未连接"}</span></div>
       <div class="sync-row"><span>AI 便签</span><span>已开启</span></div>
       <div class="sync-row"><span>轻柔提醒</span><span>每天最多 2 次</span></div>
       <div class="sync-row"><span>重要健康提示</span><span>始终开启</span></div>
@@ -247,6 +267,82 @@ function openSheetBase(returnTarget = document.activeElement) {
   sheetClose.focus({ preventScroll: true });
 }
 
+
+function renderBaselineMetric(metric, label, latestLabelFn, min, max) {
+  const bl = window.__baseline;
+  const range = bl?.[metric]?.range;
+  const latest = bl?.[metric]?.latest;
+  let zoneStyle = "left:30%;width:40%";
+  let markerStyle = "left:50%";
+  let markerClass = "";
+  let ariaRange = "";
+
+  if (range) {
+    const zoneLeft = ((range[0] - min) / (max - min)) * 100;
+    const zoneWidth = ((range[1] - range[0]) / (max - min)) * 100;
+    zoneStyle = `left:${Math.max(0, zoneLeft).toFixed(1)}%;width:${Math.min(70, zoneWidth).toFixed(1)}%`;
+    if (latest != null) {
+      const pos = getBaselineMarkerPos(metric, latest, min, max);
+      markerStyle = `left:${pos.left}`;
+      markerClass = pos.outside ? "is-outside" : "";
+    }
+    ariaRange = getBaselineRangeText(metric);
+  }
+
+  const labels = metric === "sleep"
+    ? ["5时", "7时", "9时"]
+    : metric === "wakeCount"
+    ? ["0次", "2次", "4次"]
+    : ["45", `${range ? Math.round(range[0])+"–"+Math.round(range[1]) : "56–66"}`, "90"];
+
+  return `
+      <article class="baseline-metric">
+        <div class="baseline-metric-head">
+          <strong>${label}</strong>
+          <span>${latestLabelFn(bl)}</span>
+        </div>
+        <div class="range-track" aria-label="${ariaRange || "常用范围"}">
+          <span class="range-zone" style="${zoneStyle}"></span>
+          <span class="range-marker ${markerClass}" style="${markerStyle}"></span>
+        </div>
+        <div class="range-labels"><span>${labels[0]}</span><span>${labels[1]}</span><span>${labels[2]}</span></div>
+      </article>`;
+}
+
+function getBaselineDeviationText() {
+  const bl = window.__baseline;
+  if (!bl) return "今天有 1 项离开了常用范围";
+  let deviations = 0;
+  if (bl.sleep.range && bl.sleep.latest != null) {
+    if (bl.sleep.latest < bl.sleep.range[0] || bl.sleep.latest > bl.sleep.range[1]) deviations++;
+  }
+  if (bl.wakeCount.range && bl.wakeCount.latest != null) {
+    if (bl.wakeCount.latest > bl.wakeCount.range[1]) deviations++;
+  }
+  if (bl.heartRate.range && bl.heartRate.latest != null) {
+    if (bl.heartRate.latest < bl.heartRate.range[0] || bl.heartRate.latest > bl.heartRate.range[1]) deviations++;
+  }
+  if (deviations === 0) return "今天所有指标都在常用范围内";
+  if (deviations === 1) return "今天有 1 项离开了常用范围";
+  return `今天有 ${deviations} 项离开了常用范围`;
+}
+
+function getBaselineRangeText(metric) {
+  const bl = window.__baseline;
+  if (!bl || !bl[metric] || !bl[metric].range) return "";
+  const r = bl[metric].range;
+  if (metric === "sleep") return `常用 ${r[0].toFixed(0)}–${r[1].toFixed(0)} 小时`;
+  if (metric === "wakeCount") return `常用 ${r[0]}–${r[1]} 次`;
+  if (metric === "heartRate") return `常用 ${Math.round(r[0])}–${Math.round(r[1])} bpm`;
+  return "";
+}
+
+function getBaselineMarkerPos(metric, val, min, max) {
+  if (val == null) return { left: "50%", outside: false };
+  const pct = ((val - min) / (max - min)) * 100;
+  return { left: `${Math.max(5, Math.min(95, pct))}%`, outside: pct < 10 || pct > 90 };
+}
+
 function openBaseline(returnTarget = document.activeElement) {
   const baselineDays = Array.from({ length: 28 }, (_, index) => {
     const missing = index === 6 || index === 19;
@@ -263,47 +359,31 @@ function openBaseline(returnTarget = document.activeElement) {
     </div>
     <div class="baseline-hero">
       <div class="baseline-hero-top">
-        <span>28 天有效记录</span>
-        <span class="baseline-confidence">仍在学习</span>
+        <span>${window.__baseline?.days || 28} 天有效记录</span>
+        <span class="baseline-confidence">${window.__healthConnected ? "已同步" : "演示数据"}</span>
       </div>
-      <h3>今天有 1 项离开了常用范围</h3>
+      <h3>${getBaselineDeviationText()}</h3>
       <p>基线会随着生活状态慢慢移动，它不是一条永远不能越过的线。</p>
-      <div class="baseline-progress" aria-label="最近 28 天中已有 26 天有效记录">${baselineDays}</div>
+      <div class="baseline-progress" aria-label="最近 ${window.__baseline?.days || 28} 天有效记录">${baselineDays}</div>
     </div>
     <div class="baseline-metrics">
-      <article class="baseline-metric">
-        <div class="baseline-metric-head">
-          <strong>睡眠时长</strong>
-          <span>昨夜 6时42分</span>
-        </div>
-        <div class="range-track" aria-label="常用睡眠时长约 6小时50分到 7小时25分">
-          <span class="range-zone" style="left:43%;width:28%"></span>
-          <span class="range-marker is-outside" style="left:34%"></span>
-        </div>
-        <div class="range-labels"><span>5时</span><span>7时</span><span>9时</span></div>
-      </article>
-      <article class="baseline-metric">
-        <div class="baseline-metric-head">
-          <strong>夜间醒来</strong>
-          <span>昨夜 2 次</span>
-        </div>
-        <div class="range-track" aria-label="常用夜间醒来次数为 0 到 1 次">
-          <span class="range-zone" style="left:7%;width:34%"></span>
-          <span class="range-marker is-outside" style="left:76%"></span>
-        </div>
-        <div class="range-labels"><span>0次</span><span>2次</span><span>4次</span></div>
-      </article>
-      <article class="baseline-metric">
-        <div class="baseline-metric-head">
-          <strong>静息心率</strong>
-          <span>今天 62 bpm</span>
-        </div>
-        <div class="range-track" aria-label="常用静息心率为 56 到 66 bpm">
-          <span class="range-zone" style="left:38%;width:30%"></span>
-          <span class="range-marker" style="left:54%"></span>
-        </div>
-        <div class="range-labels"><span>45</span><span>56–66</span><span>75</span></div>
-      </article>
+      ${renderBaselineMetric("sleep", "睡眠时长", bl => {
+        const latest = bl?.sleep?.latest;
+        if (latest != null) {
+          const h = Math.floor(latest);
+          const m = Math.round((latest - h) * 60);
+          return `昨夜 ${h}时${m}分`;
+        }
+        return "昨夜 —";
+      }, 3, 10)}
+      ${renderBaselineMetric("wakeCount", "夜间醒来", bl => {
+        const latest = bl?.wakeCount?.latest;
+        return latest != null ? `昨夜 ${latest} 次` : "昨夜 —";
+      }, 0, 4)}
+      ${renderBaselineMetric("heartRate", "静息心率", bl => {
+        const latest = bl?.heartRate?.latest;
+        return latest != null ? `今天 ${Math.round(latest)} bpm` : "今天 —";
+      }, 45, 90)}
     </div>
     <div class="baseline-callout">
       <svg><use href="#i-spark"></use></svg>
@@ -313,7 +393,7 @@ function openBaseline(returnTarget = document.activeElement) {
       <button class="sheet-action" data-open-detective>找找这次变化的原因</button>
       <button class="sheet-action secondary" data-open-triage>检查危险症状</button>
     </div>
-    <p class="sheet-footnote">当前为演示数据。正式版本应显示样本量、缺失天数、数据来源和每项指标的更新时间。个人基线不用于诊断。</p>
+    <p class="sheet-footnote">${window.__healthConnected ? "数据来自小米运动健康云同步。" : "当前为演示数据。"}个人基线不用于诊断。</p>
   `;
   openSheetBase(returnTarget);
 }
@@ -775,21 +855,51 @@ chatForm.addEventListener("submit", (event) => {
     reply.innerHTML = `
       <div class="ai-cloud-avatar" aria-hidden="true"><i></i><i></i><b></b></div>
       <p></p>
-      <span>刚刚 · 根据今天已同步的数据</span>
+      <span>刚刚 · ${window.__healthConnected ? "根据今天已同步的小米数据" : "演示数据"}</span>
     `;
     let answer;
-    if (message.includes("运动")) {
-      answer = "今天更适合散步、舒展或轻一点的骑行。你昨晚少睡了一点，先不急着把训练塞满，身体舒服了再加一点力气。";
+    const hd = window.__healthData;
+    const sleepMin = hd?.sleep?.latest?.totalMinutes;
+    const wakeCount = hd?.sleep?.latest?.wakeCount;
+    const hr = hd?.heartRate?.restingHr;
+    const steps = hd?.activity?.todaySteps;
+
+    if (message.includes("运动") || message.includes("步") || message.includes("走路")) {
+      answer = steps != null
+        ? `今天已经走了 ${steps} 步${steps < 5000 ? "，可以再适当走一段。" : "，运动量已经不错。"}${wakeCount > 1 ? "昨晚多醒了" + wakeCount + "次，先不急着加高强度训练。" : ""}`
+        : "今天更适合散步、舒展或轻一点的骑行。你昨晚少睡了一点，先不急着把训练塞满。";
     } else if (message.includes("累") || message.includes("睡")) {
-      answer = "我看到了几朵靠得比较低的云：睡得少一点、夜里多醒两次。今天先做一件能让肩膀放松的小事，不必马上解释所有疲惫。";
+      answer = sleepMin != null
+        ? `昨晚睡了 ${Math.floor(sleepMin/60)} 小时 ${sleepMin%60} 分${wakeCount > 0 ? "，醒了 " + wakeCount + " 次。" : "。"}${sleepMin < 360 ? "睡眠偏少，今天先做一件能让肩膀放松的小事。" : "睡眠在正常范围，今天可以保持节奏。"}` + (hr != null ? `静息心率 ${hr} bpm。` : "")
+        : "我看到了几朵靠得比较低的云。今天先做一件能让肩膀放松的小事，不必马上解释所有疲惫。";
+    } else if (message.includes("心") || message.includes("心跳")) {
+      answer = hr != null
+        ? `今天的静息心率是 ${hr} bpm${hr > 85 ? "，偏快，可能与睡眠不足或压力有关。" : hr < 55 ? "，偏慢，长期运动者通常如此。" : "，在正常范围内。"}` + (wakeCount > 1 ? "昨晚多醒可能让它暂时偏高。" : "")
+        : "我把心率数据收进云里了。如果伴随胸痛或呼吸困难，请立即求助。";
     } else {
-      answer = "我把这句话收进云里了。结合你今天的睡眠和心跳，先给自己一点慢下来的空间；如果身体有明显不适，也可以把具体感受继续告诉我。";
+      answer = `我把这句话收进云里了。${sleepMin != null ? "结合今天的睡眠和心跳" : "结合你的状态"}，先给自己一点慢下来的空间；如果身体有明显不适，也可以把具体感受继续告诉我。`;
     }
     reply.querySelector("p").textContent = answer;
     chatStream.appendChild(reply);
     reply.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, 1100);
 });
+
+function getWeeklySummary() {
+  const hd = window.__healthData;
+  if (!hd || !window.__healthConnected) {
+    return '入睡时间比上周晚了 17 分钟，周末补回了 41 分钟。三次散步之后，你都记下了"轻了一点"。';
+  }
+  const nights = hd.sleep?.nights?.slice(-7) || [];
+  const steps = hd.activity?.days?.slice(-7) || [];
+  if (nights.length === 0) return "本周数据还在积累中，多记录几天就能看到趋势。";
+  const avgSleep = nights.reduce((s, n) => s + (n.totalMinutes || 0), 0) / nights.length;
+  const avgSteps = steps.reduce((s, a) => s + (a.steps || 0), 0) / Math.max(steps.length, 1);
+  const avgH = Math.floor(avgSleep / 60);
+  const avgM = Math.round(avgSleep % 60);
+  const walkDays = steps.filter(a => (a.steps || 0) > 3000).length;
+  return `这周平均睡眠 ${avgH} 小时 ${avgM} 分，有 ${walkDays} 天走了超过 3000 步。${hd.heartRate?.restingHr ? "静息心率 " + Math.round(hd.heartRate.restingHr) + " bpm。" : ""}`;
+}
 
 document.getElementById("read-letter").addEventListener("click", (event) => {
   sheetContent.innerHTML = `
